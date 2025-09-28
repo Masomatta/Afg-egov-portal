@@ -2,10 +2,10 @@
   "name": "e-gov",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "Backend/app.js", 
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "node Backend/app.js",
+    "dev": "nodemon Backend/app.js"
   },
   "keywords": [],
   "author": "",
@@ -28,7 +28,9 @@
     "method-override": "^3.0.0",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.6",
-    "nodemon": "^3.1.10",
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }
