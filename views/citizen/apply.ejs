@@ -77,7 +77,7 @@
             <div class="form-group">
                 <label class="form-label">Required Documents</label>
                 <div id="requiredDocuments" class="documents-list">
-                    <!-- Documents will be populated by JavaScript -->
+
                 </div>
             </div>
 
@@ -116,7 +116,6 @@
         const fileInput = document.getElementById('documents');
         const filePreview = document.getElementById('filePreview');
         
-        // Service data for JavaScript access
         const servicesData = {
             <% services.forEach(service => { %>
                 <%= service.id %>: {

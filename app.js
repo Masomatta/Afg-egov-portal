@@ -51,6 +51,7 @@ app.use('/', authRoutes);
 app.use('/citizen', citizenRoutes);
 app.use('/officer', officerRoutes);
 app.use('/admin', adminRoutes);
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 
 app.get('/', (req, res) => {
