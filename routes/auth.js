@@ -49,8 +49,6 @@ router.post('/login', async (req, res) => {
     }
     
     req.session.user = user;
-    
-    // Redirect based on user type
     switch (user.user_type) {
       case 'citizen':
         res.redirect('/citizen/dashboard');
