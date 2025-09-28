@@ -2,7 +2,7 @@
   "name": "e-gov",
   "version": "1.0.0",
   "type": "module",
-  "main": "Backend/app.js", 
+  "main": "app.js", 
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js"
