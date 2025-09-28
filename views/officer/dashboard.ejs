@@ -1,0 +1,351 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="dashboard-header">
+        <h1 class="page-title">Officer Dashboard</h1>
+        <div class="user-info">
+            <span class="user-role">
+                <%= user.user_type.replace('_', ' ') %> - <%= departmentName %>
+            </span>
+        </div>
+    </div>
+
+    <!-- Officer Statistics -->
+    <div class="stats-grid">
+        <div class="stat-card stat-primary">
+            <div class="stat-value"><%= stats.total_assigned || 0 %></div>
+            <div class="stat-label">Total Assigned</div>
+        </div>
+        
+        <div class="stat-card stat-warning">
+            <div class="stat-value"><%= stats.in_progress || 0 %></div>
+            <div class="stat-label">In Progress</div>
+        </div>
+        
+        <div class="stat-card stat-success">
+            <div class="stat-value"><%= stats.approved || 0 %></div>
+            <div class="stat-label">Approved</div>
+        </div>
+        
+        <div class="stat-card stat-danger">
+            <div class="stat-value"><%= stats.rejected || 0 %></div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <% if (user.user_type === 'department_head') { %>
+                    Department Requests
+                <% } else if (user.user_type === 'officer') { %>
+                    My Assigned Requests
+                <% } else { %>
+                    All Pending Requests
+                <% } %>
+            </h2>
+            <span class="badge"><%= requests.length %> requests</span>
+        </div>
+        
+        <% if (requests.length === 0) { %>
+            <div class="text-center p-3">
+                <p>No pending requests found.</p>
+                <p class="text-muted">All requests are currently processed or no new requests available.</p>
+            </div>
+        <% } else { %>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Citizen</th>
+                            <th>Service</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% requests.forEach(request => { %>
+                            <tr>
+                                <td>#<%= request.id %></td>
+                                <td><%= request.citizen_name %></td>
+                                <td><%= request.service_name %></td>
+                                <td><%= request.department_name %></td>
+                                <td>
+                                    <span class="status-badge status-<%= request.status %>">
+                                        <%= request.status.replace('_', ' ') %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(request.submitted_at).toLocaleDateString() %></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="/officer/request/<%= request.id %>" class="btn btn-primary">Review</a>
+                                        <% if (['department_head', 'admin'].includes(user.user_type) && !request.reviewed_by) { %>
+                                            <button class="btn btn-secondary assign-btn" data-request-id="<%= request.id %>" data-department-id="<%= request.department_id %>">Assign</button>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Quick Actions</h2>
+        </div>
+        <div class="quick-actions">
+            <div class="action-item">
+                <h3>Review Requests</h3>
+                <p>Process pending applications</p>
+                <a href="#pending-requests" class="btn btn-primary">Start Reviewing</a>
+            </div>
+            
+            <% if (user.user_type === 'department_head') { %>
+            <div class="action-item">
+                <h3>Department Overview</h3>
+                <p>Manage your department's workflow</p>
+                <a href="/admin/departments" class="btn btn-secondary">View Department</a>
+            </div>
+            <% } %>
+            
+            <% if (user.user_type === 'admin') { %>
+            <div class="action-item">
+                <h3>Admin Panel</h3>
+                <p>Access system administration</p>
+                <a href="/admin/dashboard" class="btn btn-success">Go to Admin</a>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Assignment Modal -->
+<div id="assignModal" class="modal hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Assign Request to Officer</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="assignForm">
+                <input type="hidden" id="assignRequestId" name="request_id">
+                <div class="form-group">
+                    <label for="officerSelect" class="form-label">Select Officer</label>
+                    <select id="officerSelect" name="officer_id" class="form-input" required>
+                        <option value="">Loading officers...</option>
+                    </select>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .user-role {
+        background-color: #e0f2fe;
+        color: #0369a1;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+    }
+    
+    .badge {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .action-item {
+        padding: 1.5rem;
+        border: 1px solid var(--gray-light);
+        border-radius: var(--radius);
+    }
+    
+    .action-item h3 {
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+    
+    .action-item p {
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .text-muted {
+        color: var(--secondary);
+        font-size: 0.875rem;
+    }
+    
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    
+    .modal.hidden {
+        display: none;
+    }
+    
+    .modal-content {
+        background-color: white;
+        border-radius: var(--radius);
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--gray-light);
+    }
+    
+    .modal-header h3 {
+        margin: 0;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--secondary);
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-cancel {
+        margin-right: auto;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const assignModal = document.getElementById('assignModal');
+        const assignForm = document.getElementById('assignForm');
+        const officerSelect = document.getElementById('officerSelect');
+        const assignRequestId = document.getElementById('assignRequestId');
+        
+        // Assignment modal functionality
+        document.querySelectorAll('.assign-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const requestId = this.getAttribute('data-request-id');
+                const departmentId = this.getAttribute('data-department-id');
+                
+                assignRequestId.value = requestId;
+                loadOfficers(departmentId);
+                assignModal.classList.remove('hidden');
+            });
+        });
+        
+        // Load officers for assignment
+        async function loadOfficers(departmentId) {
+            try {
+                officerSelect.innerHTML = '<option value="">Loading officers...</option>';
+                
+                const response = await fetch(`/officer/department/officers?department_id=${departmentId}`);
+                const officers = await response.json();
+                
+                officerSelect.innerHTML = '<option value="">Select an officer</option>';
+                officers.forEach(officer => {
+                    const option = document.createElement('option');
+                    option.value = officer.id;
+                    option.textContent = `${officer.name} (${officer.job_title || officer.user_type})`;
+                    officerSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading officers:', error);
+                officerSelect.innerHTML = '<option value="">Error loading officers</option>';
+            }
+        }
+        
+        // Handle assignment form submission
+        assignForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const requestId = formData.get('request_id');
+            
+            try {
+                const response = await fetch(`/officer/request/${requestId}/assign`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+                
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Error assigning request');
+                }
+            } catch (error) {
+                console.error('Assignment error:', error);
+                alert('Error assigning request');
+            }
+        });
+        
+        // Modal close functionality
+        document.querySelector('.modal-close').addEventListener('click', () => {
+            assignModal.classList.add('hidden');
+        });
+        
+        document.querySelector('.modal-cancel').addEventListener('click', () => {
+            assignModal.classList.add('hidden');
+        });
+        
+        assignModal.addEventListener('click', (e) => {
+            if (e.target === assignModal) {
+                assignModal.classList.add('hidden');
+            }
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

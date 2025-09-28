@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Government Portal</title>
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container nav-container">
+            <a href="/" class="logo">AFG-eGov</a>
+            
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <% if (user.user_type === 'citizen') { %>
+                        <li><a href="/citizen/dashboard" class="nav-link">Dashboard</a></li>
+                        <li><a href="/citizen/apply" class="nav-link">Apply for Service</a></li>
+                    <% } else if (['officer', 'department_head'].includes(user.user_type)) { %>
+                        <li><a href="/officer/dashboard" class="nav-link">Officer Dashboard</a></li>
+                    <% } else if (user.user_type === 'admin') { %>
+                        <li><a href="/admin/dashboard" class="nav-link">Admin Dashboard</a></li>
+                    <% } %>
+                <% } %>
+                
+                <div class="nav-user">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <div class="user-greeting">Hello, <%= user.name %></div>
+                        <li><a href="/logout" class="nav-link">Logout</a></li>
+                    <% } else { %>
+                        <li><a href="/login" class="nav-link">Login</a></li>
+                        <li><a href="/register" class="nav-link">Register</a></li>
+                    <% } %>
+                </div>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+        <% if (typeof message !== 'undefined' && message) { %>
+            <div class="alert alert-success">
+                <%= message %>
+                <button class="alert-close">&times;</button>
+            </div>
+        <% } %>
+        
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-error">
+                <%= error %>
+                <button class="alert-close">&times;</button>
+            </div>
+        <% } %>

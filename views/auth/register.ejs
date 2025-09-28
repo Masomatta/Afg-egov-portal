@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <line x1="20" y1="8" x2="20" y2="14"></line>
+                    <line x1="23" y1="11" x2="17" y2="11"></line>
+                </svg>
+            </div>
+            <h1 class="auth-title">Create Account</h1>
+        </div>
+        
+        <form action="/register" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="national_id" class="form-label">National ID</label>
+                    <input type="text" id="national_id" name="national_id" class="form-input" required placeholder="Enter your national ID">
+                </div>
+                
+                <div class="form-group">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-input" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" id="date_of_birth" name="date_of_birth" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" required placeholder="Create a password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password" class="form-label">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" required placeholder="Confirm your password">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="contact_info" class="form-label">Contact Information</label>
+                <textarea id="contact_info" name="contact_info" class="form-input form-textarea" required placeholder="Enter your phone number and address"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Register</button>
+        </form>
+        
+        <div class="auth-link">
+            Already have an account? <a href="/login">Sign in here</a>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

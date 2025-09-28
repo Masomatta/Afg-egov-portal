@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="dashboard-header">
+        <h1 class="page-title">Citizen Dashboard</h1>
+        <a href="/citizen/apply" class="btn btn-primary">Apply for Service</a>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card stat-primary">
+            <div class="stat-value"><%= requests.length %></div>
+            <div class="stat-label">Total Applications</div>
+        </div>
+        
+        <div class="stat-card stat-warning">
+            <div class="stat-value">
+                <%= requests.filter(r => r.status === 'submitted' || r.status === 'under_review').length %>
+            </div>
+            <div class="stat-label">Pending Review</div>
+        </div>
+        
+        <div class="stat-card stat-success">
+            <div class="stat-value">
+                <%= requests.filter(r => r.status === 'approved').length %>
+            </div>
+            <div class="stat-label">Approved</div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Your Applications</h2>
+        </div>
+        
+        <% if (requests.length === 0) { %>
+            <div class="text-center p-3">
+                <p>You haven't submitted any applications yet.</p>
+                <a href="/citizen/apply" class="btn btn-primary mt-2">Apply for Your First Service</a>
+            </div>
+        <% } else { %>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% requests.forEach(request => { %>
+                            <tr>
+                                <td><%= request.service_name %></td>
+                                <td><%= request.department_name %></td>
+                                <td>
+                                    <span class="status-badge status-<%= request.status %>">
+                                        <%= request.status.replace('_', ' ') %>
+                                    </span>
+                                </td>
+                                <td><%= new Date(request.submitted_at).toLocaleDateString() %></td>
+                                <td>
+                                    <a href="/citizen/request/<%= request.id %>" class="btn btn-secondary">View</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

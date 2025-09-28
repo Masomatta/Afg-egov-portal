@@ -1,0 +1,218 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="dashboard-header">
+        <h1 class="page-title">Apply for Service</h1>
+        <a href="/citizen/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Select a Service</h2>
+            <p>Choose from available government services to apply online</p>
+        </div>
+
+        <% if (services.length === 0) { %>
+            <div class="text-center p-3">
+                <p>No services available at the moment.</p>
+            </div>
+        <% } else { %>
+            <div class="services-grid">
+                <% 
+                // Group services by department
+                const servicesByDepartment = {};
+                services.forEach(service => {
+                    if (!servicesByDepartment[service.department_name]) {
+                        servicesByDepartment[service.department_name] = [];
+                    }
+                    servicesByDepartment[service.department_name].push(service);
+                });
+                %>
+
+                <% for (const department in servicesByDepartment) { %>
+                    <div class="department-section">
+                        <h3 class="department-title"><%= department %></h3>
+                        <div class="services-list">
+                            <% servicesByDepartment[department].forEach(service => { %>
+                                <div class="service-item" data-service-id="<%= service.id %>">
+                                    <div class="service-info">
+                                        <h4><%= service.name %></h4>
+                                        <p><%= service.description %></p>
+                                        <div class="service-meta">
+                                            <% if (service.fee > 0) { %>
+                                                <span class="service-fee">Fee: $<%= service.fee %></span>
+                                            <% } else { %>
+                                                <span class="service-fee free">No fee required</span>
+                                            <% } %>
+                                            <span class="service-requirements">
+                                                <%= service.requirements || 'No special requirements' %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary select-service" data-service-id="<%= service.id %>">Select</button>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Application Form (initially hidden) -->
+    <div id="applicationForm" class="card hidden">
+        <div class="card-header">
+            <h2 class="card-title">Application Form</h2>
+            <p>Complete the form for <span id="selectedServiceName"></span></p>
+        </div>
+
+        <form id="serviceApplicationForm" action="/citizen/apply" method="POST" enctype="multipart/form-data">
+            <input type="hidden" id="service_id" name="service_id" value="">
+            
+            <div class="form-group">
+                <label for="notes" class="form-label">Additional Notes</label>
+                <textarea id="notes" name="notes" class="form-input form-textarea" placeholder="Provide any additional information that might be helpful for processing your application"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Required Documents</label>
+                <div id="requiredDocuments" class="documents-list">
+                    <!-- Documents will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="documents" class="form-label">Upload Documents</label>
+                <p class="form-help">Please upload clear scans or photos of the required documents (PDF, JPG, PNG). Maximum 5 files, 5MB each.</p>
+                <input type="file" id="documents" name="documents" class="form-input" multiple accept=".pdf,.jpg,.jpeg,.png" required>
+                <div id="filePreview" class="file-preview"></div>
+            </div>
+
+            <div id="paymentSection" class="hidden">
+                <div class="form-group">
+                    <h3>Payment Information</h3>
+                    <p>This service requires a fee of $<span id="serviceFee">0.00</span>. You can make payment after submitting your application.</p>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" id="backToServices" class="btn btn-secondary">Back to Services</button>
+                <button type="submit" class="btn btn-primary">Submit Application</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const serviceItems = document.querySelectorAll('.service-item');
+        const applicationForm = document.getElementById('applicationForm');
+        const selectedServiceName = document.getElementById('selectedServiceName');
+        const serviceIdInput = document.getElementById('service_id');
+        const backToServicesBtn = document.getElementById('backToServices');
+        const paymentSection = document.getElementById('paymentSection');
+        const serviceFeeSpan = document.getElementById('serviceFee');
+        const requiredDocuments = document.getElementById('requiredDocuments');
+        const fileInput = document.getElementById('documents');
+        const filePreview = document.getElementById('filePreview');
+        
+        // Service data for JavaScript access
+        const servicesData = {
+            <% services.forEach(service => { %>
+                <%= service.id %>: {
+                    name: '<%= service.name %>',
+                    fee: <%= service.fee %>,
+                    requirements: '<%= service.requirements || "" %>',
+                    description: '<%= service.description %>'
+                },
+            <% }) %>
+        };
+
+        // Handle service selection
+        serviceItems.forEach(item => {
+            item.querySelector('.select-service').addEventListener('click', function() {
+                const serviceId = this.getAttribute('data-service-id');
+                const service = servicesData[serviceId];
+                
+                // Update form with service details
+                selectedServiceName.textContent = service.name;
+                serviceIdInput.value = serviceId;
+                
+                // Show payment section if fee is required
+                if (service.fee > 0) {
+                    paymentSection.classList.remove('hidden');
+                    serviceFeeSpan.textContent = service.fee.toFixed(2);
+                } else {
+                    paymentSection.classList.add('hidden');
+                }
+                
+                // Show required documents
+                if (service.requirements) {
+                    const requirements = service.requirements.split(',');
+                    requiredDocuments.innerHTML = requirements.map(req => 
+                        `<div class="document-requirement">${req.trim()}</div>`
+                    ).join('');
+                } else {
+                    requiredDocuments.innerHTML = '<p>No specific documents required.</p>';
+                }
+                
+                // Show application form, hide services list
+                document.querySelector('.services-grid').classList.add('hidden');
+                applicationForm.classList.remove('hidden');
+            });
+        });
+
+        // Handle back to services button
+        backToServicesBtn.addEventListener('click', function() {
+            applicationForm.classList.add('hidden');
+            document.querySelector('.services-grid').classList.remove('hidden');
+        });
+
+        // File upload preview
+        fileInput.addEventListener('change', function() {
+            filePreview.innerHTML = '';
+            if (this.files.length > 5) {
+                alert('Maximum 5 files allowed');
+                this.value = '';
+                return;
+            }
+            
+            Array.from(this.files).forEach(file => {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    this.value = '';
+                    filePreview.innerHTML = '';
+                    return;
+                }
+                
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'file-preview-item';
+                
+                if (file.type.startsWith('image/')) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'file-thumbnail';
+                    fileDiv.appendChild(img);
+                }
+                
+                const fileName = document.createElement('span');
+                fileName.textContent = file.name;
+                fileDiv.appendChild(fileName);
+                
+                filePreview.appendChild(fileDiv);
+            });
+        });
+
+        // Form validation
+        document.getElementById('serviceApplicationForm').addEventListener('submit', function(e) {
+            const files = fileInput.files;
+            if (files.length === 0) {
+                if (!confirm('You haven\'t uploaded any documents. Continue anyway?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %>

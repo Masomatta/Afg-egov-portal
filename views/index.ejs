@@ -1,0 +1,97 @@
+<%- include('partials/header') %>
+<section class="hero">
+    <div class="container">
+        <div class="card text-center">
+           
+            <h1 class="page-title">Welcome to the first Afghanistan Governmental Digital Portal</h1>
+            <p class="mb-3">AFG-eGov, The bridge between Government and Citizens </p>
+            <p class="mb-3">Access government services online without visiting offices.</p>
+            <p class="mb-3">We handle renewing Passports, ID card Registration, Tax payment, Land Registration,
+               Business License Registration and other governemtal task
+
+            </p>
+            <% if (!user) { %>
+                <a href="/register" class="btn btn-primary btn-lg">Get Started</a>
+            <% } else { %>
+                <a href="/<%= user.user_type === 'citizen' ? 'citizen' : user.user_type === 'admin' ? 'admin' : 'officer' %>/dashboard" class="btn btn-primary btn-lg">Go to Dashboard</a>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<section class="services">
+    <div class="container">
+        <h2 class="page-title">Available Services</h2>
+        
+        <div class="grid grid-3">
+            <div class="card text-center">
+                <div class="icon-circle bg-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"></path>
+                        <path d="M12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"></path>
+                    </svg>
+                </div>
+                <h3>For Citizens</h3>
+                <p>Apply for services, track applications, and receive notifications.</p>
+                <a href="/citizen/apply" class="btn btn-outline">Apply for Service</a>
+            </div>
+            
+            <div class="card text-center">
+                <div class="icon-circle bg-green">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 13.255A23.931 23.931 0 0 1 12 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2m4 6h.01M5 20h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"></path>
+                    </svg>
+                </div>
+                <h3>For Government Officers</h3>
+                <p>Review and process citizen applications efficiently.
+                 <p class=""></p>   
+                </p>
+                <a href="/officer/dashboard" class="btn btn-outline">Officer Login</a>
+            </div>
+            
+            <div class="card text-center">
+                <div class="icon-circle bg-purple">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path>
+                    </svg>
+                </div>
+                <h3>For Administrators</h3>
+                <p>Manage the system, view reports, and monitor performance.</p>
+                <a href="/admin/dashboard" class="btn btn-outline">Admin Login</a>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <h2 class="card-title">Service Catalog</h2>
+            
+            <div class="grid grid-2">
+                <div class="service-item">
+                    <h4>Passport Renewal</h4>
+                    <p>Renew your expired passport online without visiting the office.</p>
+                    <span class="status-badge status-submitted">Interior Department</span>
+                </div>
+                
+                <div class="service-item">
+                    <h4>National ID Update</h4>
+                    <p>Update your information on the national ID card.</p>
+                    <span class="status-badge status-under_review">Interior Department</span>
+                </div>
+                
+                <div class="service-item">
+                    <h4>Business License</h4>
+                    <p>Apply for a new business license or renew an existing one.</p>
+                    <span class="status-badge status-approved">Commerce Department</span>
+                </div>
+                
+                <div class="service-item">
+                    <h4>Land Registration</h4>
+                    <p>Register your land property and get official documents.</p>
+                    <span class="status-badge status-rejected">Housing Department</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

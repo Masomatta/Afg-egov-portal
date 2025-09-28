@@ -1,0 +1,135 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+    <div class="dashboard-header">
+        <h1 class="page-title">Application Details</h1>
+        <a href="/citizen/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <div class="request-meta">
+        <div class="meta-item">
+            <div class="meta-label">Service</div>
+            <div class="meta-value"><%= request.service_name %></div>
+        </div>
+        
+        <div class="meta-item">
+            <div class="meta-label">Department</div>
+            <div class="meta-value"><%= request.department_name %></div>
+        </div>
+        
+        <div class="meta-item">
+            <div class="meta-label">Status</div>
+            <div class="meta-value">
+                <span class="status-badge status-<%= request.status %>">
+                    <%= request.status.replace('_', ' ') %>
+                </span>
+            </div>
+        </div>
+        
+        <div class="meta-item">
+            <div class="meta-label">Submitted On</div>
+            <div class="meta-value"><%= new Date(request.submitted_at).toLocaleDateString() %></div>
+        </div>
+    </div>
+
+    <div class="grid grid-2">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Application Information</h2>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <p><%= request.notes || 'No additional notes provided' %></p>
+            </div>
+            
+            <% if (request.reviewed_at) { %>
+                <div class="form-group">
+                    <label class="form-label">Reviewed On</label>
+                    <p><%= new Date(request.reviewed_at).toLocaleDateString() %></p>
+                </div>
+            <% } %>
+            
+            <% if (request.notes) { %>
+                <div class="form-group">
+                    <label class="form-label">Officer Notes</label>
+                    <p><%= request.notes %></p>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Payment Information</h2>
+            </div>
+            
+            <% if (payment) { %>
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <p>$<%= payment.amount %></p>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <p>
+                        <span class="status-badge 
+                            <%= payment.status === 'completed' ? 'status-approved' : '' %>
+                            <%= payment.status === 'pending' ? 'status-under_review' : '' %>
+                            <%= payment.status === 'failed' ? 'status-rejected' : '' %>">
+                            <%= payment.status %>
+                        </span>
+                    </p>
+                </div>
+                
+                <% if (payment.payment_date) { %>
+                    <div class="form-group">
+                        <label class="form-label">Payment Date</label>
+                        <p><%= new Date(payment.payment_date).toLocaleDateString() %></p>
+                    </div>
+                <% } %>
+                
+                <% if (payment.status === 'pending') { %>
+                    <form action="/citizen/payment/<%= request.id %>" method="POST">
+                        <button type="submit" class="btn btn-success btn-full">Make Payment</button>
+                    </form>
+                <% } %>
+            <% } else { %>
+                <p>No payment required for this service.</p>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Uploaded Documents</h2>
+        </div>
+        
+        <% if (documents.length > 0) { %>
+            <div class="document-list">
+                <% documents.forEach(document => { %>
+                    <div class="document-item">
+                        <div class="document-info">
+                            <span class="document-name"><%= document.filename %></span>
+                            <span class="document-date">Uploaded: <%= new Date(document.uploaded_at).toLocaleDateString() %></span>
+                        </div>
+                        <div class="document-actions">
+                            <a href="/uploads/<%= document.filepath %>" target="_blank" class="btn btn-secondary">View</a>
+                            <a href="/uploads/<%= document.filepath %>" download class="btn btn-primary">Download</a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <p>No documents uploaded for this application.</p>
+        <% } %>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/citizen/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        <% if (request.status === 'submitted' || request.status === 'under_review') { %>
+            <a href="/citizen/apply" class="btn btn-primary">Apply for Another Service</a>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

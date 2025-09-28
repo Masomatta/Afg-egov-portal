@@ -1,0 +1,14 @@
+<% include('../layout.ejs', { title: 'Login' }) %>
+
+<form method="POST" action="/auth/login" class="mt-4">
+  <div class="mb-3">
+    <label>Email</label>
+    <input name="email" class="form-control" required />
+  </div>
+  <div class="mb-3">
+    <label>Password</label>
+    <input name="password" type="password" class="form-control" required />
+  </div>
+  <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+  <button class="btn btn-primary">login</button>
+</form>
