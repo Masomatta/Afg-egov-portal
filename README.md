@@ -1,68 +1,43 @@
-Afghan E-Government Portal 
-Features
-For Citizens
+# Afghan E-Government Portal
+## Tech Stack
 
-Register and log in securely
+* **Backend:** Node.js, Express.js
+* **Database:** PostgreSQL
+* **Authentication:** express-session, bcryptjs
+* **File Upload:** multer
+* **Frontend:** EJS templates, HTML, CSS, JavaScript
+* **Middleware:** Custom auth and role-based access control
+* **Hosting:** Can be deployed on Render or other Node.js hosting services
 
-Apply for government services online
+## Installation
 
-Upload required documents (PDF, JPG, PNG)
+1. **Clone the repository**
 
-Track the status of applications
-
-Secure logout to prevent unauthorized access
-
-For Officers
-
-Manage service requests submitted by citizens
-
-Access assigned applications and documents
-
-Update status of requests
-
-For Admin
-Manage services and departments
-
-Tech Stack
-
-Backend: Node.js, Express.js
-
-Database: PostgreSQL
-
-Authentication: express-session, bcryptjs
-
-File Upload: multer
-
-Frontend: EJS templates
-
-Installation
-
-Clone the repository
-
+```bash
 git clone https://github.com/yourusername/afghan-egov-portal.git
-Install dependencies
+```
 
+2. **Install dependencies**
+
+```bash
 npm install
-
-
-Setup environment variables
-Create a .env file with the following:
-
+```
+```
 PORT=3000
-DATABASE_URL=postgresql://username:password@host:port/dbname
-SESSION_SECRET=your_long_random_secret_string
-NODE_ENV=development
+```
 
+4. **Start the server**
 
-Start the server
-
+```bash
 npm start
+```
 
+5. **Open the application**
+   Visit `http://localhost:3000` in your browser.
 
-Open the application
-Visit http://localhost:3000 in your browser.
+## Folder Structure
 
-Folder Structure
+```
 .
 ├── config/
 │   └── database.js          # PostgreSQL pool setup
@@ -85,3 +60,4 @@ Folder Structure
 ├── app.js                    # Main entry point
 ├── package.json
 └── README.md
+```
