@@ -4,8 +4,8 @@
   "type": "module",
   "main": "Backend/app.js", 
   "scripts": {
-    "start": "node Backend/app.js",
-    "dev": "nodemon Backend/app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
